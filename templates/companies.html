@@ -1,0 +1,36 @@
+<h1>Тур компании</h1>
+
+{% for i in companies %}
+
+    <h2>Название: {{ i.name }}</h2>
+
+    <h3>
+        Средний рейтинг:
+        {{ i.avg_rating|default:"Нет оценок"|floatformat:1 }}
+    </h3>
+
+    <h3>Услуги</h3>
+    <p>
+        {% for serv in i.services.all %}
+            {{ serv.name }}{% if not forloop.last %}, {% endif %}
+        {% empty %}
+            Услуги отсутствуют
+        {% endfor %}
+    </p>
+
+    <h2>Отзывы</h2>
+    <ul>
+        {% for rev in i.reviews.all %}
+        <li>
+            <p>Оценка - {{ rev.marks }}</p>
+            <p>Текст - {{ rev.text }}</p>
+            <p>Дата отзыва - {{ rev.created_at }}</p>
+        </li>
+        {% empty %}
+            <p>Отзывов нет</p>
+        {% endfor %}
+    </ul>
+
+    <hr>
+
+{% endfor %}
