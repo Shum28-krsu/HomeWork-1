@@ -1,0 +1,23 @@
+
+<head>
+    <title>Books</title>
+</head>
+<body>
+
+<h1>Book list</h1>
+
+{% for book in books %}
+<hr
+    <h2>
+        <a href="{% url 'book_detail' book.id %}">
+            {{ book.title }}
+        </a>
+    </h2>
+
+    <p>Author: {{ book.author }}</p>
+    <p>Price: {{ book.price }}</p>
+
+    <hr>
+{% endfor %}
+
+</body>
