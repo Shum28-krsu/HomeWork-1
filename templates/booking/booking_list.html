@@ -1,0 +1,29 @@
+<h1>Записи на тур</h1>
+
+<a href="{% url 'booking_create' %}">
+    Добавить запись
+</a>
+
+<hr>
+
+{% for i in bookings %}
+
+    <h2>{{ i.full_name }}</h2>
+
+    <p>Телефон: {{ i.phone_number }}</p>
+
+    <p>Компания: {{ i.choice_company }}</p>
+
+    <p>Дата тура: {{ i.date_tour }}</p>
+
+    <a href="{% url 'booking_update' i.id %}">
+        Изменить
+    </a>
+
+    <a href="{% url 'booking_delete' i.id %}">
+        Удалить
+    </a>
+
+    <hr>
+
+{% endfor %}

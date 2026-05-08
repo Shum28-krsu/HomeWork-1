@@ -1,0 +1,13 @@
+<h1>Удаление записи</h1>
+
+<p>
+    Удалить запись "{{ booking.full_name }}" ?
+</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    <button type="submit">
+        Да удалить
+    </button>
+</form>
