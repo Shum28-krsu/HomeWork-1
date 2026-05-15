@@ -1,5 +1,9 @@
 <h1>Тур компании</h1>
 
+<form action="{% url 'company_search' %}" method="GET">
+    <input type="search" name="s" placeholder="Поиск по услугам">
+    <button type="submit">Поиск</button>
+</form>
 {% for i in companies %}
 
     <h2>Название: {{ i.name }}</h2>
@@ -34,3 +38,20 @@
     <hr>
 
 {% endfor %}
+<div>
+
+    {% if page_obj.has_previous %}
+        <a href="?page=1">Первая</a>
+        <a href="?page={{ page_obj.previous_page_number }}">Назад</a>
+    {% endif %}
+
+    <span>
+        Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Вперёд</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">Последняя</a>
+    {% endif %}
+
+</div>

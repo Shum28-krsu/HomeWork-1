@@ -1,6 +1,8 @@
 
 <head>
     <title>Books</title>
+
+
 </head>
 <body>
 
@@ -19,5 +21,68 @@
 
     <hr>
 {% endfor %}
+<h1>Книги</h1>
 
+<form action="{% url 'search' %}" method="GET">
+
+    <input
+        type="search"
+        name="s"
+        placeholder="Поиск книг"
+    >
+
+    <button type="submit">
+        Поиск
+    </button>
+
+</form>
+
+
+{% for book in page_obj %}
+
+    <h2>{{ book.title }}</h2>
+
+    <a href="/book_detail/{{ book.id }}/">
+        Подробнее
+    </a>
+
+    <hr>
+
+{% endfor %}
+
+
+<div>
+
+    {% if page_obj.has_previous %}
+
+        <a href="?page=1">
+            Первая
+        </a>
+
+        <a href="?page={{ page_obj.previous_page_number }}">
+            Назад
+        </a>
+
+    {% endif %}
+
+    <span>
+
+        Страница {{ page_obj.number }}
+        из {{ page_obj.paginator.num_pages }}
+
+    </span>
+
+    {% if page_obj.has_next %}
+
+        <a href="?page={{ page_obj.next_page_number }}">
+            Вперед
+        </a>
+
+        <a href="?page={{ page_obj.paginator.num_pages }}">
+            Последняя
+        </a>
+
+    {% endif %}
+
+</div>
 </body>

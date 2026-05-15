@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'book',
     'travel_company',
     'booking',
+    'users',
+    'captcha',
 ]
 
 MIDDLEWARE = [

@@ -1,29 +1,75 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from .models import Book
+from django.core.paginator import Paginator
 
-# Create your views here.
-def quote_a(request):
-    return HttpResponse('A lot will go wrong before everything goes right 📽 ')
-
-def quote_b(request):
-    return HttpResponse('You are free, and thats why you are lost ☯ ')
-
-def quote_c(request):
-    return HttpResponse('Focus on improving yourself , not proving yourself 🧬 ')
+from . import models
 
 
+def search_view(request):
+
+    query = request.GET.get('s', '')
+
+    if query:
+
+        books = models.Book.objects.filter(
+            title__icontains=query
+        )
+
+        paginator = Paginator(books, 3)
+
+        page_number = request.GET.get('page')
+
+        page_obj = paginator.get_page(page_number)
+
+        return render(
+            request,
+            'books/book_list.html',
+            {
+                'page_obj': page_obj
+            }
+        )
+
+    return HttpResponse('Книга не найдена')
 
 
-#HOMEWORK 2
+
+
+# HOMEWORK 2
 
 def book_list(request):
-    if request.method == 'GET':
-        books = Book.objects.all()
-        return render(request, 'books/book_list.html', {'books': books})
+
+    books = models.Book.objects.all()
+
+    paginator = Paginator(books, 3)
+
+    page_number = request.GET.get('page')
+
+    page_obj = paginator.get_page(page_number)
+
+    return render(
+        request,
+        'books/book_list.html',
+        {
+            'page_obj': page_obj
+        }
+    )
 
 
 def book_detail(request, id):
-    if request.method == 'GET':
-        book = get_object_or_404(Book, id=id)
-        return render(request, 'books/book_detail.html', {'book': book})
+
+    book = get_object_or_404(
+        models.Book,
+        id=id
+    )
+
+    # просмотры
+    book.views_count += 1
+    book.save()
+
+    return render(
+        request,
+        'books/book_detail.html',
+        {
+            'book': book
+        }
+    )

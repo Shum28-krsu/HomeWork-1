@@ -13,6 +13,9 @@ class Book(models.Model):
     genre = models.CharField(max_length=100)
     picture = models.ImageField(upload_to='book_pictures/', null=True, blank=True)
     publisher = models.CharField(max_length=150)
+
+    views_count = models.PositiveIntegerField(default=0, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
