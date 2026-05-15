@@ -4,7 +4,8 @@
     <input type="search" name="s" placeholder="Поиск по услугам">
     <button type="submit">Поиск</button>
 </form>
-{% for i in companies %}
+
+{% for i in page_obj %}
 
     <h2>Название: {{ i.name }}</h2>
 
@@ -14,6 +15,7 @@
     </h3>
 
     <h3>Услуги</h3>
+
     <p>
         {% for serv in i.services.all %}
             {{ serv.name }}{% if not forloop.last %}, {% endif %}
@@ -23,13 +25,14 @@
     </p>
 
     <h2>Отзывы</h2>
+
     <ul>
         {% for rev in i.reviews.all %}
-        <li>
-            <p>Оценка - {{ rev.marks }}</p>
-            <p>Текст - {{ rev.text }}</p>
-            <p>Дата отзыва - {{ rev.created_at }}</p>
-        </li>
+            <li>
+                <p>Оценка - {{ rev.marks }}</p>
+                <p>Текст - {{ rev.text }}</p>
+                <p>Дата отзыва - {{ rev.created_at }}</p>
+            </li>
         {% empty %}
             <p>Отзывов нет</p>
         {% endfor %}
@@ -38,6 +41,9 @@
     <hr>
 
 {% endfor %}
+
+
+<!-- ПАГИНАЦИЯ ВНЕ FOR -->
 <div>
 
     {% if page_obj.has_previous %}
