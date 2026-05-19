@@ -1,46 +1,34 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Booking
+from django.urls import reverse_lazy
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+
+from . import models
 from .forms import BookingForm
 
-def booking_list(request):
-    bookings = Booking.objects.all()
 
-    return render(request, 'booking/booking_list.html', {
-        'bookings': bookings
-    })
-
-def booking_create(request):
-    form = BookingForm(request.POST or None)
-
-    if form.is_valid():
-        form.save()
-        return redirect('booking_list')
-
-    return render(request, 'booking/booking_form.html', {
-        'form': form
-    })
-
-def booking_update(request, id):
-    booking = get_object_or_404(Booking, id=id)
-
-    form = BookingForm(request.POST or None, instance=booking)
-
-    if form.is_valid():
-        form.save()
-        return redirect('booking_list')
-
-    return render(request, 'booking/booking_form.html', {
-        'form': form
-    })
+class BookingListView(ListView):
+    model = models.Booking
+    template_name = 'booking/booking_list.html'
+    context_object_name = 'bookings'
 
 
-def booking_delete(request, id):
-    booking = get_object_or_404(Booking, id=id)
+class BookingCreateView(CreateView):
+    model = models.Booking
+    form_class = BookingForm
+    template_name = 'booking/booking_form.html'
+    success_url = reverse_lazy('booking_list')
 
-    if request.method == 'POST':
-        booking.delete()
-        return redirect('booking_list')
 
-    return render(request, 'booking/booking_delete.html', {
-        'booking': booking
-    })
+class BookingUpdateView(UpdateView):
+    model = models.Booking
+    form_class = BookingForm
+    template_name = 'booking/booking_form.html'
+    success_url = reverse_lazy('booking_list')
+    pk_url_kwarg = 'id'
+
+
+class BookingDeleteView(DeleteView):
+    model = models.Booking
+    template_name = 'booking/booking_delete.html'
+    success_url = reverse_lazy('booking_list')
+    context_object_name = 'booking'
+    pk_url_kwarg = 'id'

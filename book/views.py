@@ -1,75 +1,55 @@
-from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from django.core.paginator import Paginator
+from django.views.generic import ListView, DetailView
 
 from . import models
 
 
-def search_view(request):
+class BookListView(ListView):
+    model = models.Book
+    template_name = 'books/book_list.html'
+    context_object_name = 'page_obj'
+    paginate_by = 3
 
-    query = request.GET.get('s', '')
+    def get_queryset(self):
+        return models.Book.objects.all()
 
-    if query:
 
-        books = models.Book.objects.filter(
-            title__icontains=query
+class SearchView(ListView):
+    model = models.Book
+    template_name = 'books/book_list.html'
+    context_object_name = 'page_obj'
+    paginate_by = 3
+
+    def get_queryset(self):
+        query = self.request.GET.get('s', '')
+
+        if query:
+            return models.Book.objects.filter(
+                title__icontains=query
+            )
+
+        return models.Book.objects.none()
+
+    def render_to_response(self, context, **response_kwargs):
+        if not self.request.GET.get('s'):
+            return HttpResponse('Книга не найдена')
+
+        return super().render_to_response(
+            context,
+            **response_kwargs
         )
 
-        paginator = Paginator(books, 3)
 
-        page_number = request.GET.get('page')
+class BookDetailView(DetailView):
+    model = models.Book
+    template_name = 'books/book_detail.html'
+    context_object_name = 'book'
+    pk_url_kwarg = 'id'
 
-        page_obj = paginator.get_page(page_number)
+    def get_object(self, queryset=None):
+        book = super().get_object(queryset)
 
-        return render(
-            request,
-            'books/book_list.html',
-            {
-                'page_obj': page_obj
-            }
-        )
+        book.views_count += 1
+        book.save()
 
-    return HttpResponse('Книга не найдена')
-
-
-
-
-# HOMEWORK 2
-
-def book_list(request):
-
-    books = models.Book.objects.all()
-
-    paginator = Paginator(books, 3)
-
-    page_number = request.GET.get('page')
-
-    page_obj = paginator.get_page(page_number)
-
-    return render(
-        request,
-        'books/book_list.html',
-        {
-            'page_obj': page_obj
-        }
-    )
-
-
-def book_detail(request, id):
-
-    book = get_object_or_404(
-        models.Book,
-        id=id
-    )
-
-    # просмотры
-    book.views_count += 1
-    book.save()
-
-    return render(
-        request,
-        'books/book_detail.html',
-        {
-            'book': book
-        }
-    )
+        return book

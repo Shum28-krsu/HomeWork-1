@@ -1,51 +1,44 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.decorators import login_required
+from django.urls import reverse_lazy
+from django.contrib.auth import login, logout
+from django.contrib.auth.views import LoginView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView, ListView, RedirectView
 
 from .forms import RegisterForm, LoginForm
-from .models import CustomUser
+from . import models
 
 
-def register_view(request):
+class RegisterView(CreateView):
+    model = models.CustomUser
+    form_class = RegisterForm
+    template_name = 'users/register.html'
+    success_url = reverse_lazy('ankets')
 
-    if request.method == 'POST':
-        form = RegisterForm(request.POST, request.FILES)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('ankets')
-    else:
-        form = RegisterForm()
-    return render(request, 'users/register.html', {
-        'form': form
-    })
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        login(self.request, self.object)
+        return response
 
-def login_view(request):
-    form = LoginForm()
-    if request.method == 'POST':
-        form = LoginForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(
-                request,
-                username=username,
-                password=password
-            )
-            if user is not None:
-                login(request, user)
-                return redirect('ankets')
-    return render(request, 'users/login.html', {
-        'form': form
-    })
 
-def logout_view(request):
-    logout(request)
-    return redirect('login')
+class UserLoginView(LoginView):
+    template_name = 'users/login.html'
+    authentication_form = LoginForm
 
-@login_required
-def ankets_view(request):
-    users = CustomUser.objects.all()
-    return render(request, 'users/ankets.html', {
-        'users': users
-    })
+    def get_success_url(self):
+        return reverse_lazy('ankets')
+
+
+class LogoutView(RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        logout(self.request)
+        return reverse_lazy('login')
+
+
+class AnketsView(LoginRequiredMixin, ListView):
+    model = models.CustomUser
+    template_name = 'users/ankets.html'
+    context_object_name = 'users'
+
+    def get_queryset(self):
+        return models.CustomUser.objects.all()

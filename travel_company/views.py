@@ -1,41 +1,38 @@
-from django.shortcuts import render
-from django.core.paginator import Paginator
+from django.views.generic import ListView
 from django.db.models import Avg, Q
 
-from .models import TourCompany
+from . import models
 
 
-def company_list(request):
+class CompanyListView(ListView):
+    model = models.TourCompany
+    template_name = 'companies.html'
+    context_object_name = 'page_obj'
+    paginate_by = 3
 
-    companies = TourCompany.objects.annotate(
-        avg_rating=Avg('reviews__marks')
-    )
-
-    paginator = Paginator(companies, 3)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    return render(request, 'companies.html', {
-        'page_obj': page_obj
-    })
+    def get_queryset(self):
+        return models.TourCompany.objects.annotate(
+            avg_rating=Avg('reviews__marks')
+        )
 
 
-def search_view_c(request):
+class CompanySearchView(ListView):
+    model = models.TourCompany
+    template_name = 'companies.html'
+    context_object_name = 'page_obj'
+    paginate_by = 3
 
-    query = request.GET.get('s', '')
+    def get_queryset(self):
+        query = self.request.GET.get('s', '')
 
-    companies = TourCompany.objects.filter(
-        Q(name__icontains=query) |
-        Q(services__name__icontains=query)
-    ).annotate(
-        avg_rating=Avg('reviews__marks')
-    ).distinct()
+        return models.TourCompany.objects.filter(
+            Q(name__icontains=query) |
+            Q(services__name__icontains=query)
+        ).annotate(
+            avg_rating=Avg('reviews__marks')
+        ).distinct()
 
-    paginator = Paginator(companies, 3)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    return render(request, 'companies.html', {
-        'page_obj': page_obj,
-        'query': query
-    })
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('s', '')
+        return context
