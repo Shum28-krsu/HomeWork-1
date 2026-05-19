@@ -1,36 +1,36 @@
 from django import forms
-from captcha.fields import CaptchaField
-from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
-from . import models
+
+from captcha.fields import CaptchaField
+
+from .models import CustomUser
 
 
-class ResumeForm(forms.ModelForm):
+class RegisterForm(UserCreationForm):
+
     class Meta:
-        model = models.Resume
+
+        model = CustomUser
+
         fields = [
-            'name',
-            'surname',
-            'age',
-            'email', 
-            'phone_number', 
-            'experience', 
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'birth_date',
+            'city',
             'education',
-            'skills', 
-            'salary', 
-            'resume_file', 
-            'photo'
-            ]
-        
-class Meta:
-    model = User
-    fields = '__all__'
+            'experience',
+            'skills',
+            'resume_file',
+            'photo',
+            'password1',
+            'password2',
+        ]
 
 
-
-
-class MyForm(forms.Form):
-    CAPTCHA_LENGTH = 5  
-    CAPTCHA_IMAGE_SIZE = (150, 50)  
+class LoginForm(AuthenticationForm):
 
     captcha = CaptchaField()

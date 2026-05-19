@@ -1,0 +1,41 @@
+<h1>Анкеты пользователей</h1>
+
+<a href="{% url 'logout' %}">
+    Выйти
+</a>
+
+<hr>
+
+{% for user in users %}
+
+    <div>
+
+        <h2>
+            {{ user.first_name }}
+            {{ user.last_name }}
+        </h2>
+
+        <p>Email: {{ user.email }}</p>
+
+        <p>Телефон: {{ user.phone }}</p>
+
+        <p>Город: {{ user.city }}</p>
+
+        <p>Навыки: {{ user.skills }}</p>
+
+        <a href="{{ user.resume_file.url }}">
+            Скачать резюме
+        </a>
+
+        <br><br>
+
+        <img
+            src="{{ user.photo.url }}"
+            width="150"
+        >
+
+    </div>
+
+    <hr>
+
+{% endfor %}

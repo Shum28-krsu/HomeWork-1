@@ -41,8 +41,8 @@ INSTALLED_APPS = [
     'book',
     'travel_company',
     'booking',
-    'users',
     'captcha',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -124,4 +124,5 @@ STATIC_URL = 'static/'
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media' 
+AUTH_USER_MODEL = 'users.CustomUser'
 
